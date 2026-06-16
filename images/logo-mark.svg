@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Star Group Construction — emblem mark (recreation of the gold brand mark).
+     Transparent background, self-colored gold. Used in header & footer. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none" role="img" aria-label="Star Group Construction emblem">
+  <circle cx="50" cy="50" r="47" stroke="#C8A24B" stroke-width="1.5"/>
+  <circle cx="50" cy="50" r="40.5" stroke="#C8A24B" stroke-width="0.6" opacity="0.4"/>
+  <!-- diagonal star (behind, deeper gold) -->
+  <path d="M69.8,30.2 L57.5,50 L69.8,69.8 L50,57.5 L30.2,69.8 L42.5,50 L30.2,30.2 L50,42.5 Z" fill="#97772C"/>
+  <!-- cardinal star (front, bright gold) -->
+  <path d="M50,12 L58,42 L88,50 L58,58 L50,88 L42,58 L12,50 L42,42 Z" fill="#C8A24B"/>
+  <!-- center gem -->
+  <circle cx="50" cy="50" r="4.4" fill="#0E0F12"/>
+  <circle cx="50" cy="50" r="2.1" fill="#E3C982"/>
+</svg>
