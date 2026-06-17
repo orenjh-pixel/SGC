@@ -199,9 +199,9 @@ body.cursor-on.has-fine-pointer select { cursor: pointer; }
 
 .nav-links { display: flex; align-items: center; gap: var(--s-5); }
 .nav-links a:not(.btn) { color: var(--text-soft); font-family: var(--font-body); font-weight: 500; font-size: .82rem; text-transform: uppercase; letter-spacing: .12em; position: relative; }
-.nav-links a:not(.btn)::after { content: ""; position: absolute; left: 0; bottom: -7px; height: 1px; width: 0; background: var(--gold); transition: width .3s var(--ease); }
+.nav-links a:not(.btn)::after { content: ""; position: absolute; left: 0; bottom: -7px; height: 1px; width: 100%; background: var(--gold); transform: scaleX(0); transform-origin: left; transition: transform .3s var(--ease); }
 .nav-links a:not(.btn):hover { color: var(--text); }
-.nav-links a:not(.btn):hover::after, .nav-links a.active:not(.btn)::after { width: 100%; }
+.nav-links a:not(.btn):hover::after, .nav-links a.active:not(.btn)::after { transform: scaleX(1); }
 .nav-links a.active:not(.btn) { color: var(--gold); }
 .nav-cta { padding: 12px 24px; }
 

@@ -209,7 +209,7 @@
 
     /* ---------- Magnetic buttons ---------- */
     if (finePointer && !reduceMotion) {
-      document.querySelectorAll(".btn, [data-magnetic]").forEach(function (b) {
+      document.querySelectorAll(".btn:not(.nav-cta), [data-magnetic]").forEach(function (b) {
         b.addEventListener("mousemove", function (e) {
           var r = b.getBoundingClientRect();
           var x = e.clientX - r.left - r.width / 2, yv = e.clientY - r.top - r.height / 2;
