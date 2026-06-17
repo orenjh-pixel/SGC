@@ -163,12 +163,12 @@ section { padding: var(--s-7) 0; position: relative; }
    ============================================================ */
 .cursor-dot, .cursor-ring { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9999; border-radius: 50%; opacity: 0; transition: opacity .25s var(--ease); will-change: transform; }
 .cursor-dot { width: 7px; height: 7px; background: var(--gold-soft); transform: translate3d(-50%,-50%,0); }
-.cursor-ring { width: 42px; height: 42px; border: 1px solid rgba(227,201,130,.7); transform: translate3d(-50%,-50%,0); transition: width .3s var(--ease), height .3s var(--ease), background .3s var(--ease), border-color .3s var(--ease); }
+.cursor-ring { width: 42px; height: 42px; border: 1px solid rgba(227,201,130,.7); transform: translate3d(-50%,-50%,0); transition: background .3s var(--ease), border-color .3s var(--ease); }
 body.cursor-on.has-fine-pointer { cursor: none; }
 body.cursor-on.has-fine-pointer a, body.cursor-on.has-fine-pointer button { cursor: none; }
 body.cursor-on.has-fine-pointer input, body.cursor-on.has-fine-pointer textarea { cursor: text; }
 body.cursor-on.has-fine-pointer select { cursor: pointer; }
-.cursor-ring.hover { width: 64px; height: 64px; background: var(--gold-tint); border-color: transparent; }
+.cursor-ring.hover { background: var(--gold-tint); border-color: transparent; }
 @media (pointer: coarse) { .cursor-dot, .cursor-ring { display: none !important; } }
 
 /* ============================================================

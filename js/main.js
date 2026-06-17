@@ -188,7 +188,7 @@
       var cring = document.createElement("div"); cring.className = "cursor-ring";
       document.body.appendChild(cdot); document.body.appendChild(cring);
       document.body.classList.add("has-fine-pointer");
-      var cmx = window.innerWidth / 2, cmy = window.innerHeight / 2, crx = cmx, cry = cmy, cShown = false;
+      var cmx = window.innerWidth / 2, cmy = window.innerHeight / 2, crx = cmx, cry = cmy, crs = 1, crsT = 1, cShown = false;
       function showCursor(v) { cdot.style.opacity = cring.style.opacity = v ? "1" : "0"; document.body.classList.toggle("cursor-on", v); }
       window.addEventListener("mousemove", function (e) {
         cmx = e.clientX; cmy = e.clientY;
@@ -196,13 +196,13 @@
         cdot.style.transform = "translate3d(" + cmx + "px," + cmy + "px,0) translate(-50%,-50%)";
       }, { passive: true });
       (function ringLoop() {
-        crx += (cmx - crx) * 0.2; cry += (cmy - cry) * 0.2;
-        cring.style.transform = "translate3d(" + crx + "px," + cry + "px,0) translate(-50%,-50%)";
+        crx += (cmx - crx) * 0.2; cry += (cmy - cry) * 0.2; crs += (crsT - crs) * 0.2;
+        cring.style.transform = "translate3d(" + crx + "px," + cry + "px,0) translate(-50%,-50%) scale(" + crs.toFixed(3) + ")";
         requestAnimationFrame(ringLoop);
       })();
       var cHoverSel = "a,button,.gallery-item,input,textarea,select,[data-magnetic]";
-      document.addEventListener("mouseover", function (e) { if (e.target.closest(cHoverSel)) cring.classList.add("hover"); });
-      document.addEventListener("mouseout", function (e) { if (e.target.closest(cHoverSel)) cring.classList.remove("hover"); });
+      document.addEventListener("mouseover", function (e) { if (e.target.closest(cHoverSel)) { cring.classList.add("hover"); crsT = 1.55; } });
+      document.addEventListener("mouseout", function (e) { if (e.target.closest(cHoverSel)) { cring.classList.remove("hover"); crsT = 1; } });
       document.addEventListener("mouseleave", function () { showCursor(false); });
       window.addEventListener("blur", function () { showCursor(false); });
     }
