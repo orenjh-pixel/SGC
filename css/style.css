@@ -79,11 +79,15 @@ ul { list-style: none; }
 /* ---------- Page transitions — cross-document View Transitions (smooth nav) ---------- */
 @view-transition { navigation: auto; }
 @media (prefers-reduced-motion: no-preference) {
-  ::view-transition-old(root) { animation: vt-out .28s var(--ease) both; }
-  ::view-transition-new(root) { animation: vt-in .46s var(--ease-out) both; }
+  ::view-transition-old(root) { animation: vt-out .18s linear both; }
+  ::view-transition-new(root) { animation: vt-in .26s var(--ease-out) both; }
 }
-@keyframes vt-out { to   { opacity: 0; transform: translateY(-10px) scale(.995); } }
-@keyframes vt-in  { from { opacity: 0; transform: translateY(16px) scale(.995); } }
+@keyframes vt-out { to   { opacity: 0; } }
+@keyframes vt-in  { from { opacity: 0; } }
+/* On cross-document nav, show content instantly so the crossfade is the ONLY motion (no entrance replay = no jank) */
+.nav-instant [data-reveal], .nav-instant [data-reveal-img] { opacity: 1 !important; transform: none !important; clip-path: none !important; }
+.nav-instant [data-reveal], .nav-instant [data-reveal-img], .nav-instant .split-line > span { transition: none !important; }
+.nav-instant .split-line > span { transform: none !important; }
 
 /* film-grain plaster overlay (the "material") */
 body::after {

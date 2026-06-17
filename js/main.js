@@ -10,6 +10,15 @@
   var still = /[?&]still\b/.test(location.search); // dev flag: freeze intro/reveals for screenshots
   if (still) document.documentElement.classList.add("still");
 
+  /* Smooth tab-to-tab: on a cross-document View Transition, show content immediately
+     during the crossfade (no entrance-animation replay), then restore scroll-reveals. */
+  window.addEventListener("pagereveal", function (e) {
+    if (!e || !e.viewTransition) return;
+    var r = document.documentElement;
+    r.classList.add("nav-instant");
+    setTimeout(function () { r.classList.remove("nav-instant"); }, 480);
+  });
+
   /* ---------- Intro curtain (once per session, timeout-protected) ---------- */
   (function curtain() {
     if (reduceMotion || still) return;
