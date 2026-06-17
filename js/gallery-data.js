@@ -5,7 +5,7 @@
    grouped by area/job. Each entry:
      { f: filename in /images, t: filter tag, c: caption, feat: homepage-featured }
    Tags in use: "kitchens", "bathrooms", "interiors"
-   (Add "roofing" / "exteriors" entries + matching filter buttons when those arrive.)
+   (Add a "pergolas" entry + a matching filter button when pergola photos arrive.)
    ============================================================ */
 window.SGC_GALLERY = [
   // ===================== KITCHENS =====================
@@ -42,6 +42,5 @@ window.SGC_TAG_LABEL = {
   kitchens:  "Kitchen Remodel",
   bathrooms: "Bathroom Remodel",
   interiors: "Interior Renovation",
-  roofing:   "Roofing",
-  exteriors: "Exteriors"
+  pergolas:  "Pergola"
 };

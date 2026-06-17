@@ -40,10 +40,20 @@
     var y = document.getElementById("year");
     if (y) y.textContent = new Date().getFullYear();
 
-    /* ---------- Sticky header ---------- */
+    /* ---------- Sticky header + hide chrome on scroll-down, reveal on scroll-up ---------- */
     var header = document.querySelector(".site-header");
-    function onScroll() { if (header) header.classList.toggle("scrolled", window.scrollY > 12); }
-    onScroll();
+    var lastApplied = window.scrollY, chromeTicking = false;
+    function applyChrome() {
+      chromeTicking = false;
+      var y = window.scrollY;
+      if (header) header.classList.toggle("scrolled", y > 12);
+      if (document.body.classList.contains("nav-open")) { lastApplied = y; return; }
+      if (y < 80) { document.body.classList.remove("chrome-hidden"); lastApplied = y; }              // always show near the top
+      else if (y - lastApplied > 10) { document.body.classList.add("chrome-hidden"); lastApplied = y; }    // scrolling down -> hide
+      else if (lastApplied - y > 10) { document.body.classList.remove("chrome-hidden"); lastApplied = y; } // scrolling up -> show
+    }
+    function onScroll() { if (!chromeTicking) { chromeTicking = true; requestAnimationFrame(applyChrome); } }
+    applyChrome();
     window.addEventListener("scroll", onScroll, { passive: true });
 
     /* ---------- Mobile drawer nav ---------- */
@@ -164,22 +174,9 @@
       }, { threshold: 0.6 }).observe(el);
     });
 
-    /* ---------- Custom gold cursor (desktop fine pointer) ---------- */
-    if (finePointer && !reduceMotion) {
-      var dot = document.createElement("div"); dot.className = "cursor-dot";
-      var ring = document.createElement("div"); ring.className = "cursor-ring";
-      document.body.appendChild(dot); document.body.appendChild(ring);
-      var mx = -100, my = -100, rx = -100, ry = -100, on = false;
-      window.addEventListener("mousemove", function (e) {
-        mx = e.clientX; my = e.clientY;
-        if (!on) { on = true; document.body.classList.add("cursor-on", "has-fine-pointer"); dot.style.opacity = ring.style.opacity = "1"; }
-        dot.style.transform = "translate3d(" + mx + "px," + my + "px,0) translate(-50%,-50%)";
-      });
-      (function loop() { rx += (mx - rx) * 0.16; ry += (my - ry) * 0.16; ring.style.transform = "translate3d(" + rx + "px," + ry + "px,0) translate(-50%,-50%)"; requestAnimationFrame(loop); })();
-      document.addEventListener("mouseover", function (e) { if (e.target.closest("a,button,.gallery-item,[data-magnetic]")) ring.classList.add("hover"); });
-      document.addEventListener("mouseout", function (e) { if (e.target.closest("a,button,.gallery-item,[data-magnetic]")) ring.classList.remove("hover"); });
-      window.addEventListener("blur", function () { dot.style.opacity = ring.style.opacity = "0"; });
-    }
+    /* ---------- Custom cursor: removed ----------
+       The blend-mode gold cursor hid the native pointer and disappeared over
+       mid-tone backgrounds, so we keep the normal system cursor for reliability. */
 
     /* ---------- Magnetic buttons ---------- */
     if (finePointer && !reduceMotion) {
@@ -207,21 +204,44 @@
       document.head.appendChild(s);
     }
 
-    /* ---------- Quote form -> email handoff ---------- */
+    /* ---------- Quote form -> Web3Forms (clean inline submit), with email-app fallback ---------- */
     var form = document.getElementById("quoteForm");
     if (form) {
       form.addEventListener("submit", function (e) {
         e.preventDefault();
-        var to = form.getAttribute("data-to") || "INFO@EXAMPLE.COM";
         var get = function (n) { return form[n] ? form[n].value : ""; };
-        var subject = "Free estimate request — " + (get("name") || "Website");
-        var body =
-          "Name: " + get("name") + "\r\n" +
-          "Phone: " + get("phone") + "\r\n" +
-          "Email: " + get("email") + "\r\n" +
-          "Service: " + get("service") + "\r\n\r\n" +
-          "Project details:\r\n" + get("message");
-        window.location.href = "mailto:" + to + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
+        var keyEl = form.querySelector('[name="access_key"]');
+        var accessKey = keyEl ? keyEl.value : "";
+
+        // Until a real Web3Forms key is set, fall back to the visitor's email app so the form still works.
+        if (!accessKey || accessKey.indexOf("YOUR_") === 0) {
+          var to = form.getAttribute("data-to") || "stargroupconstructionco@gmail.com";
+          var subject = "Free estimate request — " + (get("name") || "Website");
+          var body =
+            "Name: " + get("name") + "\r\n" +
+            "Phone: " + get("phone") + "\r\n" +
+            "Email: " + get("email") + "\r\n" +
+            "Service: " + get("service") + "\r\n\r\n" +
+            "Project details:\r\n" + get("message");
+          window.location.href = "mailto:" + to + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
+          return;
+        }
+
+        var btn = form.querySelector('button[type="submit"]');
+        if (btn) { btn.disabled = true; btn.textContent = "Sending…"; }
+        fetch("https://api.web3forms.com/submit", {
+          method: "POST", headers: { "Accept": "application/json" }, body: new FormData(form)
+        }).then(function (r) { return r.json(); }).then(function (data) {
+          if (data && data.success) {
+            form.innerHTML = '<div style="text-align:center;padding:28px 0">' +
+              '<h3 style="color:var(--gold);margin-bottom:10px">Thank you — request received.</h3>' +
+              '<p>We’ll get back to you within one business day. Prefer to call? <a href="tel:+19548306335">954-830-6335</a></p></div>';
+          } else { throw new Error("submit failed"); }
+        }).catch(function () {
+          if (btn) { btn.disabled = false; btn.innerHTML = 'Request My Free Estimate <span class="arrow">&rarr;</span>'; }
+          var note = form.querySelector(".form-note");
+          if (note) note.textContent = "Sorry — something went wrong. Please call us at 954-830-6335.";
+        });
       });
     }
 

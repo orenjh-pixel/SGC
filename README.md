@@ -1,67 +1,49 @@
 # Star Group Construction (SGC) — Website
 
-A fast, premium, **no-build** static website for Star Group Construction — luxury
-remodeling, roofing, and exteriors. Dark **Charcoal & Gold** theme (matches the brand
-logo), mobile-first, with a real project gallery, accessible lightbox, and clean
-scroll animations.
+A fast, premium, **no-build** static website for Star Group Construction — kitchen &
+bathroom remodeling and custom pergolas in **Miami & Fort Lauderdale**. Dark
+**Charcoal & Gold** theme, mobile-first, with a real project gallery, accessible
+lightbox, and clean scroll animations.
 
 ## Pages
-- `index.html` — Home (hero, stats, services, featured projects, process, promo, CTA)
-- `services.html` — Remodeling (lead) + Roofing & Exteriors + process
+- `index.html` — Home (hero, featured work, process, CTA)
+- `services.html` — Remodeling (Kitchens & Bathrooms) + Pergolas & Outdoor Living + process
 - `gallery.html` — Filterable project gallery (Kitchens / Bathrooms / Interiors) + lightbox
-- `about.html` — Story, values, stats
+- `about.html` — Story, values
 - `contact.html` — Contact info + free-estimate form
 
+## Business details (live on the site)
+- **Phone:** 954-830-6335
+- **Email:** stargroupconstructionco@gmail.com
+- **Address:** 4491 S State Rd 7, Davie, FL 33314
+- **Service area:** Miami & Fort Lauderdale
+- Licensed & Insured · Free Estimates
+
 ## How to view it
-Open `index.html` in any browser — no server or build step needed.
-(For the gallery's `<dialog>` lightbox, any modern browser works.)
+Open `index.html` in any browser — no server or build step. (Clean URLs like `/gallery`
+only resolve once deployed on Vercel via `vercel.json` `cleanUrls`.)
 
 ## Tech notes
-- **One stylesheet** (`css/style.css`). Re-skin the whole site by editing the color
-  tokens under `:root` at the top. Fonts: Cormorant Garamond (display) + Inter (body),
-  loaded from Google Fonts.
-- **One script** (`js/main.js`): drawer nav, sticky header, scroll-reveal
-  (IntersectionObserver, respects `prefers-reduced-motion`), light hero parallax,
-  the quote form's email handoff, and the gallery + lightbox.
-- **Gallery is data-driven** — manage photos in ONE place: `js/gallery-data.js`.
-  Each entry is `{ f: filename, t: tag, c: caption, feat: featured }`.
+- **One stylesheet** (`css/style.css`) — re-skin via the color tokens under `:root`.
+  Fonts: Playfair Display (display) + Inter (body), from Google Fonts.
+- **One script** (`js/main.js`): drawer nav, hide-on-scroll header + mobile call-bar,
+  scroll-reveal, hero parallax, the quote form, and the gallery + lightbox.
+- **Gallery is data-driven** — manage photos in `js/gallery-data.js`
+  (`{ f: filename, t: tag, c: caption, feat: featured }`). Tags in use:
+  `kitchens` | `bathrooms` | `interiors`.
 
-## Adding / changing photos
-1. Drop the image in `images/`.
-2. Add a line to `js/gallery-data.js` with its filename, a tag
-   (`kitchens` | `bathrooms` | `interiors`), and a caption.
-3. To add **Roofing** or **Exteriors** to the gallery: tag photos `roofing` /
-   `exteriors` in `gallery-data.js`, then add matching `<button class="filter-btn"
-   data-cat="roofing">` buttons in `gallery.html`. (Labels already exist in
-   `SGC_TAG_LABEL`.) Note: all current photos are interior remodels — there are no
-   roofing/exterior photos yet.
+## The contact form (Web3Forms)
+The form is wired for **Web3Forms** (no backend) — submissions email to the address
+above. To activate: create a free key at **web3forms.com** for
+`stargroupconstructionco@gmail.com` and paste it into the `access_key` hidden input in
+`contact.html`. Until a real key is set, the form gracefully falls back to opening the
+visitor's email app, so it never breaks.
 
-## Logo
-- `images/logo-mark.svg` — gold emblem used in the header/footer (recreation of the brand mark).
-- `images/logo.svg` — full horizontal lockup (emblem + wordmark) for social/letterhead.
-- `images/favicon.svg` — browser tab icon.
-- `images/sgc logo.jpg` — your original gold-on-marble render (reference).
+## Still to add (real content)
+- A **real** client review (the testimonial section was removed — no fabricated reviews).
+- Verify the **"500+ / 50+" project counts** in `index.html` / `services.html`, or swap
+  in real figures.
 
-## Before launch — fill in real details
-Search & replace these placeholders across all `.html` files:
-
-| Placeholder | What to put |
-|---|---|
-| `(000) 000-0000` and `tel:+10000000000` | Your phone number |
-| `INFO@EXAMPLE.COM` | Your real inbox — **also** the form's `data-to` in `contact.html` |
-| `[Street Address, City, ST]` | Your address |
-| `[YOUR SERVICE AREA]` | The towns/region you serve |
-| Stats (`15+`, `500+`, `5★`) | Your real numbers |
-| Testimonial `[Client Name]` / `[Project / City]` | A real review (home page) |
-| About `[Add a line or two…]` | A sentence about your founder / years / roots |
-| Promo `$500 off…` | Your real current offer |
-
-## The contact form
-No backend — on submit it opens the visitor's email app with the details prefilled
-(destination = the form's `data-to`). To collect submissions server-side later, point
-the `<form>` at a free service like **Formspree** or **Netlify Forms** (a few minutes
-to set up).
-
-## Publishing (free)
-- **GitHub Pages** — push this repo, enable Pages on `main`.
-- **Netlify / Vercel** — drag-and-drop the folder or connect the repo.
+## Publishing
+- **Vercel** — repo is connected; `vercel.json` enables clean URLs and `theme-color`/
+  safe-area handling covers mobile. Push to the connected branch to deploy.
