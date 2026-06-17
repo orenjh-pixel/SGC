@@ -54,12 +54,12 @@
   /* ---- Motion ---- */
   --ease: cubic-bezier(.7,0,.3,1);
   --ease-out: cubic-bezier(.16,1,.3,1);
-  --dur:  .9s;
+  --dur:  .55s;
 }
 
 /* ---------- Reset ---------- */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { -webkit-text-size-adjust: 100%; -webkit-tap-highlight-color: transparent; }
+html { -webkit-text-size-adjust: 100%; -webkit-tap-highlight-color: transparent; scroll-behavior: smooth; }
 body {
   font-family: var(--font-body);
   color: var(--text-soft);
@@ -76,10 +76,19 @@ a:hover { color: var(--gold-soft); }
 ul { list-style: none; }
 ::selection { background: var(--gold); color: var(--on-gold); }
 
+/* ---------- Page transitions — cross-document View Transitions (smooth nav) ---------- */
+@view-transition { navigation: auto; }
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-old(root) { animation: vt-out .28s var(--ease) both; }
+  ::view-transition-new(root) { animation: vt-in .46s var(--ease-out) both; }
+}
+@keyframes vt-out { to   { opacity: 0; transform: translateY(-10px) scale(.995); } }
+@keyframes vt-in  { from { opacity: 0; transform: translateY(16px) scale(.995); } }
+
 /* film-grain plaster overlay (the "material") */
 body::after {
   content: ""; position: fixed; inset: 0; z-index: 9998; pointer-events: none;
-  opacity: .05; mix-blend-mode: overlay; background-size: 200px 200px;
+  opacity: .045; background-size: 200px 200px;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
@@ -148,11 +157,13 @@ section { padding: var(--s-7) 0; position: relative; }
 /* ============================================================
    CUSTOM CURSOR (desktop pointer:fine only — toggled by JS)
    ============================================================ */
-.cursor-dot, .cursor-ring { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9999; border-radius: 50%; mix-blend-mode: difference; opacity: 0; }
+.cursor-dot, .cursor-ring { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9999; border-radius: 50%; opacity: 0; transition: opacity .25s var(--ease); will-change: transform; }
 .cursor-dot { width: 7px; height: 7px; background: var(--gold-soft); transform: translate3d(-50%,-50%,0); }
 .cursor-ring { width: 42px; height: 42px; border: 1px solid rgba(227,201,130,.7); transform: translate3d(-50%,-50%,0); transition: width .3s var(--ease), height .3s var(--ease), background .3s var(--ease), border-color .3s var(--ease); }
 body.cursor-on.has-fine-pointer { cursor: none; }
 body.cursor-on.has-fine-pointer a, body.cursor-on.has-fine-pointer button { cursor: none; }
+body.cursor-on.has-fine-pointer input, body.cursor-on.has-fine-pointer textarea { cursor: text; }
+body.cursor-on.has-fine-pointer select { cursor: pointer; }
 .cursor-ring.hover { width: 64px; height: 64px; background: var(--gold-tint); border-color: transparent; }
 @media (pointer: coarse) { .cursor-dot, .cursor-ring { display: none !important; } }
 
@@ -286,7 +297,7 @@ body.cursor-on.has-fine-pointer a, body.cursor-on.has-fine-pointer button { curs
    GALLERY (masonry) + lightbox
    ============================================================ */
 .gallery-filters { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: var(--s-6); }
-.filter-btn { font-family: var(--font-body); font-weight: 500; font-size: .74rem; text-transform: uppercase; letter-spacing: .14em; padding: 10px 22px; border-radius: var(--pill); border: 1px solid var(--line); background: transparent; color: var(--muted); cursor: pointer; transition: all .25s var(--ease); }
+.filter-btn { font-family: var(--font-body); font-weight: 500; font-size: .74rem; text-transform: uppercase; letter-spacing: .14em; padding: 10px 22px; border-radius: var(--pill); border: 1px solid var(--line); background: transparent; color: var(--muted); cursor: pointer; transition: color .25s var(--ease), background-color .25s var(--ease), border-color .25s var(--ease); }
 .filter-btn:hover { border-color: var(--gold); color: var(--gold); }
 .filter-btn.active { background: var(--gold); border-color: var(--gold); color: var(--on-gold); }
 
@@ -308,7 +319,7 @@ body.cursor-on.has-fine-pointer a, body.cursor-on.has-fine-pointer button { curs
 .lightbox img { max-width: 94vw; max-height: 82vh; width: auto; object-fit: contain; margin: 0 auto; border-radius: var(--radius); box-shadow: var(--shadow-lg); }
 .lightbox figcaption { color: #fff; margin-top: var(--s-2); font-family: var(--font-display); font-weight: 500; font-size: 1.3rem; }
 .lightbox figcaption span { display: block; color: var(--gold-soft); font-family: var(--font-body); font-weight: 400; font-size: .76rem; text-transform: uppercase; letter-spacing: .16em; margin-top: 5px; }
-.lb-btn { position: fixed; top: 50%; transform: translateY(-50%); width: 54px; height: 54px; border-radius: 50%; border: 1px solid rgba(255,255,255,.16); background: rgba(255,255,255,.06); color: #fff; cursor: pointer; font-size: 1.6rem; display: grid; place-items: center; transition: all .25s var(--ease); z-index: 1; }
+.lb-btn { position: fixed; top: 50%; transform: translateY(-50%); width: 54px; height: 54px; border-radius: 50%; border: 1px solid rgba(255,255,255,.16); background: rgba(255,255,255,.06); color: #fff; cursor: pointer; font-size: 1.6rem; display: grid; place-items: center; transition: background-color .2s var(--ease), color .2s var(--ease), border-color .2s var(--ease), transform .2s var(--ease); z-index: 1; }
 .lb-btn:hover { background: var(--gold); color: var(--on-gold); border-color: var(--gold); }
 .lb-prev { left: 18px; } .lb-next { right: 18px; }
 .lb-close { top: 20px; right: 20px; transform: none; width: 46px; height: 46px; font-size: 1.7rem; }
@@ -332,7 +343,7 @@ body.cursor-on.has-fine-pointer a, body.cursor-on.has-fine-pointer button { curs
   body.chrome-hidden .site-header { transform: translateY(-100%); }
   body.chrome-hidden .callbar { transform: translateY(100%); }
   /* drawer is a fixed descendant of the header — never transform the header while it's open */
-  body.nav-open .site-header { transform: none; transition: none; }
+  body.nav-open .site-header { transform: none; transition: none; backdrop-filter: none; -webkit-backdrop-filter: none; }
 
   /* contact page = already at the estimate form, so no floating bar */
   body.page-contact .callbar { display: none; }
@@ -385,12 +396,12 @@ form.quote { background: var(--surface); padding: clamp(26px, 4vw, 40px); border
 [data-reveal].in { opacity: 1; transform: none; }
 
 /* image clip-wipe */
-[data-reveal-img] { clip-path: inset(0 0 100% 0); transform: scale(1.06); transition: clip-path 1.05s var(--ease), transform 1.25s var(--ease); will-change: clip-path, transform; }
+[data-reveal-img] { clip-path: inset(0 0 100% 0); transform: scale(1.06); transition: clip-path .7s var(--ease-out), transform .75s var(--ease-out); will-change: clip-path, transform; }
 [data-reveal-img].in { clip-path: inset(0 0 0 0); transform: none; }
 
 /* split-line headline reveal (JS wraps lines) */
 .split-line { display: block; overflow: hidden; }
-.split-line > span { display: block; transform: translateY(115%); transition: transform .95s var(--ease); transition-delay: var(--ld, 0ms); will-change: transform; }
+.split-line > span { display: block; transform: translateY(115%); transition: transform .6s var(--ease-out); transition-delay: var(--ld, 0ms); will-change: transform; }
 [data-split].in .split-line > span, .split-line.in > span { transform: translateY(0); }
 
 /* ============================================================
@@ -425,7 +436,7 @@ form.quote { background: var(--surface); padding: clamp(26px, 4vw, 40px); border
   .nav-links .nav-cta { margin-top: var(--s-3); width: 100%; justify-content: center; }
   .nav-backdrop { display: block; position: fixed; inset: 0; background: rgba(8,9,11,.6); z-index: 104; opacity: 0; visibility: hidden; transition: opacity .35s var(--ease), visibility .35s var(--ease); }
   .nav-backdrop.open { opacity: 1; visibility: visible; }
-  body.nav-open { overflow: hidden; }
+  body.nav-open { position: fixed; left: 0; right: 0; width: 100%; overflow: hidden; }
   .hero h1 { max-width: 18ch; }
   .hero-foot { display: none; }
   .spread .ghost { font-size: 34vw; }

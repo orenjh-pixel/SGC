@@ -56,28 +56,27 @@
     applyChrome();
     window.addEventListener("scroll", onScroll, { passive: true });
 
-    /* ---------- Mobile drawer nav ---------- */
+    /* ---------- Mobile drawer nav (scroll-locked) ---------- */
     var toggle = document.querySelector(".nav-toggle");
     var links = document.querySelector(".nav-links");
     var backdrop = document.querySelector(".nav-backdrop");
-    function closeNav() {
+    var navScrollY = 0;
+    function setNav(open) {
       if (!toggle) return;
-      toggle.classList.remove("open");
-      if (links) links.classList.remove("open");
-      if (backdrop) backdrop.classList.remove("open");
-      document.body.classList.remove("nav-open");
-      toggle.setAttribute("aria-expanded", "false");
-    }
-    if (toggle) toggle.addEventListener("click", function () {
-      var open = toggle.classList.toggle("open");
+      if (open === document.body.classList.contains("nav-open")) return;  // no-op if already in that state — prevents stray scroll-to-top
+      if (open) { navScrollY = window.scrollY || window.pageYOffset || 0; document.body.style.top = (-navScrollY) + "px"; }
+      toggle.classList.toggle("open", open);
       if (links) links.classList.toggle("open", open);
       if (backdrop) backdrop.classList.toggle("open", open);
       document.body.classList.toggle("nav-open", open);
       toggle.setAttribute("aria-expanded", String(open));
-    });
+      if (!open) { document.body.style.top = ""; window.scrollTo(0, navScrollY); }
+    }
+    function closeNav() { setNav(false); }
+    if (toggle) toggle.addEventListener("click", function () { setNav(!toggle.classList.contains("open")); });
     if (backdrop) backdrop.addEventListener("click", closeNav);
     if (links) links.querySelectorAll("a").forEach(function (a) { a.addEventListener("click", closeNav); });
-    document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeNav(); });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape" && document.body.classList.contains("nav-open")) closeNav(); });
 
     /* ---------- Headline line-splitting (for masked reveal) ---------- */
     function splitLines(el) {
@@ -174,9 +173,30 @@
       }, { threshold: 0.6 }).observe(el);
     });
 
-    /* ---------- Custom cursor: removed ----------
-       The blend-mode gold cursor hid the native pointer and disappeared over
-       mid-tone backgrounds, so we keep the normal system cursor for reliability. */
+    /* ---------- Custom gold cursor (desktop fine-pointer; solid, no blend) ---------- */
+    if (finePointer && !reduceMotion) {
+      var cdot = document.createElement("div"); cdot.className = "cursor-dot";
+      var cring = document.createElement("div"); cring.className = "cursor-ring";
+      document.body.appendChild(cdot); document.body.appendChild(cring);
+      document.body.classList.add("has-fine-pointer");
+      var cmx = window.innerWidth / 2, cmy = window.innerHeight / 2, crx = cmx, cry = cmy, cShown = false;
+      function showCursor(v) { cdot.style.opacity = cring.style.opacity = v ? "1" : "0"; document.body.classList.toggle("cursor-on", v); }
+      window.addEventListener("mousemove", function (e) {
+        cmx = e.clientX; cmy = e.clientY;
+        if (!cShown) { cShown = true; showCursor(true); }
+        cdot.style.transform = "translate3d(" + cmx + "px," + cmy + "px,0) translate(-50%,-50%)";
+      }, { passive: true });
+      (function ringLoop() {
+        crx += (cmx - crx) * 0.2; cry += (cmy - cry) * 0.2;
+        cring.style.transform = "translate3d(" + crx + "px," + cry + "px,0) translate(-50%,-50%)";
+        requestAnimationFrame(ringLoop);
+      })();
+      var cHoverSel = "a,button,.gallery-item,input,textarea,select,[data-magnetic]";
+      document.addEventListener("mouseover", function (e) { if (e.target.closest(cHoverSel)) cring.classList.add("hover"); });
+      document.addEventListener("mouseout", function (e) { if (e.target.closest(cHoverSel)) cring.classList.remove("hover"); });
+      document.addEventListener("mouseleave", function () { showCursor(false); });
+      window.addEventListener("blur", function () { showCursor(false); });
+    }
 
     /* ---------- Magnetic buttons ---------- */
     if (finePointer && !reduceMotion) {
@@ -190,19 +210,7 @@
       });
     }
 
-    /* ---------- Lenis inertia scroll (desktop only, via CDN) ---------- */
-    if (!reduceMotion && window.matchMedia("(min-width: 1024px)").matches) {
-      var s = document.createElement("script");
-      s.src = "https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js";
-      s.onload = function () {
-        try {
-          var lenis = new Lenis({ lerp: 0.09, wheelMultiplier: 1 });
-          function raf(t) { lenis.raf(t); requestAnimationFrame(raf); }
-          requestAnimationFrame(raf);
-        } catch (e) {}
-      };
-      document.head.appendChild(s);
-    }
+    /* Native scrolling kept for true 120Hz smoothness (Lenis JS scroll removed). */
 
     /* ---------- Quote form -> Web3Forms (clean inline submit), with email-app fallback ---------- */
     var form = document.getElementById("quoteForm");
